@@ -86,6 +86,57 @@ void free(void *ptr)
     return;
 }
 
+void *calloc(int32 count, int32 size)
+{
+    void *ptr;
+    int32 total_bytes;
+    
+    total_bytes = count * size;
+    ptr = alloc(total_bytes);
+    
+    if (!ptr) return $v 0;
+    
+    memset(ptr, 0, total_bytes);
+    
+    return ptr;
+}
+
+void *realloc(void *ptr, int32 new_bytes)
+{
+    header *old_hdr;
+    void *new_ptr;
+    word old_words;
+    word new_words;
+    int32 copy_bytes;
+    
+    if (!ptr) {
+        return alloc(new_bytes);
+    }
+    
+    if (new_bytes == 0) {
+        free(ptr);
+        return $v 0;
+    }
+    
+    old_hdr = $h (($v ptr) - 4);
+    old_words = old_hdr->w;
+    new_words = (!(new_bytes % 4)) ? new_bytes / 4 : (new_bytes / 4) + 1;
+    
+    if (new_words <= old_words) {
+        return ptr;
+    }
+    
+    new_ptr = alloc(new_bytes);
+    if (!new_ptr) return $v 0;
+    
+    copy_bytes = old_words * 4;
+    memcpy(new_ptr, ptr, copy_bytes);
+    
+    free(ptr);
+    
+    return new_ptr;
+}
+
 void show_(header *hdr) {
     header *p;
     void *mem;

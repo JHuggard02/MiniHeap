@@ -43,6 +43,9 @@ typedef struct packed s_header header;
 #define findblock(x) findblock_((header* )heap_ptr, (x), 0)
 #define show() show_($h heap_ptr)
 
+void *realloc(void *ptr, int32 new_bytes);
+void *calloc(int32 count, int32 size);
+void free(void *ptr);
 void show_(header*);
 header *findblock_(header*, word, word);
 void *mkalloc(word, header*);
