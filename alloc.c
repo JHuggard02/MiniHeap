@@ -137,6 +137,45 @@ void *realloc(void *ptr, int32 new_bytes)
     return new_ptr;
 }
 
+int32 get_block_size(void *ptr)
+{
+    header *hdr;
+    
+    if (!ptr) return 0;
+    
+    hdr = $h (($v ptr) - 4);
+    
+    return hdr->w * 4;
+}
+
+void heap_stats(int32 *total_words, int32 *allocated_words, int32 *free_words, int32 *num_blocks)
+{
+    header *p;
+    void *mem;
+    int32 total = 0;
+    int32 allocated = 0;
+    int32 free_space = 0;
+    int32 blocks = 0;
+    
+    for (p = $h heap_ptr; p->w; mem = $v p + ((p->w+1)*4), p = $h mem) {
+        total += p->w;
+        blocks++;
+        
+        if (p->allocated) {
+            allocated += p->w;
+        } else {
+            free_space += p->w;
+        }
+    }
+    
+    if (total_words) *total_words = total;
+    if (allocated_words) *allocated_words = allocated;
+    if (free_words) *free_words = free_space;
+    if (num_blocks) *num_blocks = blocks;
+    
+    return;
+}
+
 void show_(header *hdr) {
     header *p;
     void *mem;
