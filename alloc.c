@@ -74,6 +74,18 @@ void *alloc(int32 bytes)
 
 }
 
+void free(void *ptr)
+{
+    header *hdr;
+    
+    if (!ptr) return;
+    
+    hdr = $h (($v ptr) - 4);
+    hdr->allocated = false;
+    
+    return;
+}
+
 void show_(header *hdr) {
     header *p;
     void *mem;
